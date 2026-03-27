@@ -37,5 +37,10 @@ def test_db():
     db.test.insert_one({"msg": "DB Connected"})
     return {"message": "MongoDB Connected"}
 
+# ✅ NEW: health check
+@app.route("/health")
+def health():
+    return {"status": "OK"}
+
 if __name__ == "__main__":
     app.run(debug=True)

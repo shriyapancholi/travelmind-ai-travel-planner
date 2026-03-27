@@ -28,19 +28,22 @@ app.register_blueprint(auth_bp, url_prefix="/api/auth")
 app.register_blueprint(trips_bp, url_prefix="/api/trips")
 app.register_blueprint(generate_bp, url_prefix="/api/generate")
 
+# home route
 @app.route("/")
 def home():
     return {"message": "TravelMind Backend Running"}
 
+# test DB
 @app.route("/test-db")
 def test_db():
     db.test.insert_one({"msg": "DB Connected"})
     return {"message": "MongoDB Connected"}
 
-# ✅ NEW: health check
+# health check (for Docker / cloud)
 @app.route("/health")
 def health():
     return {"status": "OK"}
 
+# run app
 if __name__ == "__main__":
     app.run(debug=True)

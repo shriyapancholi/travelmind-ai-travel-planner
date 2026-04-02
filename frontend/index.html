@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TravelMind Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<div class="dashboard">
+
+    <!-- ✅ Sidebar (ONLY ONE) -->
+    <div class="sidebar">
+        <h2>✈️ TravelMind</h2>
+        <ul>
+            <li onclick="go('index.html')" id="nav-dashboard">🏠 Dashboard</li>
+            <li onclick="go('trips.html')" id="nav-trips">🧳 My Trips</li>
+            <li onclick="go('saved.html')" id="nav-saved">💾 Saved</li>
+            <li onclick="go('explore.html')" id="nav-explore">🌍 Explore</li>
+            <li onclick="go('login.html')" id="nav-login">🔐 Login</li>
+        </ul>
+    </div>
+
+    <!-- ✅ Main Content -->
+    <div class="main">
+
+        <h1>Plan Your Trip 🌍</h1>
+
+        <!-- Form -->
+        <div class="card">
+            <input id="destination" type="text" placeholder="🌍 Destination">
+            <input id="budget" type="number" placeholder="💰 Budget">
+            <input id="days" type="number" placeholder="📅 Days">
+
+            <button onclick="generateTrip()">Generate Trip</button>
+        </div>
+
+        <!-- Result -->
+        <div id="result" class="result-box">
+            <p>✨ Your trip details will appear here</p>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <button onclick="go('saved.html')">💾 Save Trip</button>
+            <button onclick="go('trips.html')">🧳 View Trips</button>
+        </div>
+
+    </div>
+
+    <!-- ✅ Right Panel -->
+    <div class="right-panel">
+
+        <div class="stat-card">
+            <h2>24</h2>
+            <p>Trips</p>
+        </div>
+
+        <div class="stat-card">
+            <h2>37</h2>
+            <p>Countries</p>
+        </div>
+
+        <div class="map">
+            🌍 Map coming soon
+        </div>
+
+        <!-- Countries -->
+        <div class="countries">
+            <div>🇮🇳 India</div>
+            <div>🇫🇷 France</div>
+            <div>🇺🇸 USA</div>
+            <div>🇮🇹 Italy</div>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>

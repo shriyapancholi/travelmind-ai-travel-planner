@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Saved Trips</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>✈️ TravelMind</h2>
+        <ul>
+            <li onclick="go('index.html')">🏠 Dashboard</li>
+            <li onclick="go('trips.html')">🧳 My Trips</li>
+            <li class="active">💾 Saved</li>
+            <li onclick="go('explore.html')">🌍 Explore</li>
+        </ul>
+    </div>
+
+    <!-- Main -->
+    <div class="main">
+        <h1>Saved Trips 💾</h1>
+
+        <div id="savedTrips" class="trip-grid">
+            <p>Loading trips...</p>
+        </div>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+
+<script>
+function loadSavedTrips() {
+    fetch("http://localhost:5000/api/trips")
+        .then(res => res.json())
+        .then(data => {
+            const container = document.getElementById("savedTrips");
+
+            if (!data.length) {
+                container.innerHTML = "😢 No saved trips";
+                return;
+            }
+
+            container.innerHTML = data.map(trip => `
+                <div class="trip-card">
+                    <img src="https://source.unsplash.com/400x300/?${trip.destination}">
+                    <h3>${trip.destination}</h3>
+                    <p>💰 ₹${trip.total_cost} • 📅 ${trip.days || 5} Days</p>
+
+                    <div class="actions">
+                        <button onclick='viewTrip(${JSON.stringify(trip)})'>View</button>
+                        <button class="danger" onclick='deleteSaved("${trip._id}")'>Delete</button>
+                    </div>
+                </div>
+            `).join("");
+        })
+        .catch(() => {
+            document.getElementById("savedTrips").innerHTML = "❌ Error loading trips";
+        });
+}
+
+function viewTrip(trip) {
+    localStorage.setItem("latestTrip", JSON.stringify(trip));
+    window.location.href = "details.html";
+}
+
+function deleteSaved(id) {
+    fetch(`http://localhost:5000/api/trips/${id}`, {
+        method: "DELETE"
+    })
+    .then(() => loadSavedTrips());
+}
+
+loadSavedTrips();
+</script>
+
+</body>
+</html>

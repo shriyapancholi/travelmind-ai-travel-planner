@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trip Details</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>✈️ TravelMind</h2>
+        <ul>
+            <li onclick="go('index.html')" id="nav-dashboard">🏠 Dashboard</li>
+            <li onclick="go('trips.html')" id="nav-trips">🧳 My Trips</li>
+            <li onclick="go('saved.html')" id="nav-saved">💾 Saved</li>
+            <li onclick="go('explore.html')" id="nav-explore">🌍 Explore</li>
+        </ul>
+    </div>
+
+    <!-- Main -->
+    <div class="main">
+        <h1>Trip Details 📄</h1>
+
+        <!-- Dynamic Trip Info -->
+        <div id="tripDetails" class="card"></div>
+
+        <!-- Itinerary -->
+        <div id="itinerary" class="card"></div>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+
+<script>
+const data = JSON.parse(localStorage.getItem("latestTrip"));
+
+const tripBox = document.getElementById("tripDetails");
+const itineraryBox = document.getElementById("itinerary");
+
+if (data) {
+    // Trip Info
+    tripBox.innerHTML = `
+        <h2>${data.destination} 🌍</h2>
+        <p>💰 Budget: ₹${data.total_cost}</p>
+        <p>📅 ${data.itinerary?.length || 5} Days</p>
+        <p>📍 Distance: ${data.distance} km</p>
+    `;
+
+    // Itinerary
+    let itineraryHTML = "<h3>📅 Itinerary</h3><ul>";
+
+    if (data.itinerary && data.itinerary.length > 0) {
+        data.itinerary.forEach((day, index) => {
+            itineraryHTML += `<li>Day ${index + 1}: ${day}</li>`;
+        });
+    } else {
+        itineraryHTML += "<li>No itinerary available</li>";
+    }
+
+    itineraryHTML += "</ul>";
+
+    itineraryBox.innerHTML = itineraryHTML;
+
+} else {
+    tripBox.innerHTML = "❌ No trip data found";
+}
+</script>
+
+</body>
+</html>

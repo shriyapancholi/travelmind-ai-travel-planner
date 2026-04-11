@@ -1,83 +1,124 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>TravelMind Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TravelMind — AI Travel Planner</title>
+    <script>if (!localStorage.getItem("token")) { window.location.replace("login.html"); }</script>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 </head>
 
 <body>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-<div class="dashboard">
+    <div class="app-layout">
+        <aside class="sidebar">
+            <div class="sidebar-logo"><span>✈</span> TravelMind</div>
+            <nav class="sidebar-nav">
+                <a class="nav-item active">🏠 <span>Dashboard</span></a>
+                <a class="nav-item" onclick="go('trips.html')">🧳 <span>My Trips</span></a>
+                <a class="nav-item" onclick="go('explore.html')">🌍 <span>Explore</span></a>
+                <a class="nav-item" id="nav-login">🔐 <span>Login</span></a>
+            </nav>
+            <div class="sidebar-badge">🇮🇳 Made for India</div>
+        </aside>
 
-    <!-- ✅ Sidebar (ONLY ONE) -->
-    <div class="sidebar">
-        <h2>✈️ TravelMind</h2>
-        <ul>
-            <li onclick="go('index.html')" id="nav-dashboard">🏠 Dashboard</li>
-            <li onclick="go('trips.html')" id="nav-trips">🧳 My Trips</li>
-            <li onclick="go('saved.html')" id="nav-saved">💾 Saved</li>
-            <li onclick="go('explore.html')" id="nav-explore">🌍 Explore</li>
-            <li onclick="go('login.html')" id="nav-login">🔐 Login</li>
-        </ul>
+        <main class="main-content">
+            <div class="hero-banner">
+                <h1>Plan Your Perfect Trip ✈️</h1>
+                <p>AI-powered travel packages — real hotels, real flights, real INR prices. All in under 30 seconds.</p>
+            </div>
+
+            <div class="plan-card">
+                <div class="plan-title">Where do you want to go?</div>
+                <div class="form-grid-2">
+                    <div class="field-group">
+                        <label>🌍 Destination</label>
+                        <input id="destination" type="text" placeholder="e.g. Mumbai, Paris, Dubai">
+                    </div>
+                    <div class="field-group">
+                        <label>📍 Departing From</label>
+                        <input id="origin" type="text" placeholder="e.g. Delhi, Bangalore" value="Delhi">
+                    </div>
+                    <div class="field-group">
+                        <label>🛫 Departure Date</label>
+                        <input id="departure_date" type="date">
+                    </div>
+                    <div class="field-group">
+                        <label>🛬 Return Date</label>
+                        <input id="return_date" type="date">
+                    </div>
+                    <div class="field-group">
+                        <label>📅 Duration (Days)</label>
+                        <input id="days" type="number" min="1" max="30" placeholder="e.g. 5">
+                    </div>
+                    <div class="field-group">
+                        <label>💰 Total Budget (₹)</label>
+                        <input id="budget" type="number" min="500" placeholder="e.g. 50000">
+                    </div>
+                    <div class="field-group">
+                        <label>👥 No. of Travelers</label>
+                        <input id="travelers" type="number" min="1" max="20" placeholder="1" value="1">
+                    </div>
+                    <div class="field-group">
+                        <label>🎯 Trip Type</label>
+                        <select id="trip_type">
+                            <option value="leisure">🏖 Leisure / Vacation</option>
+                            <option value="adventure">🏔 Adventure</option>
+                            <option value="business">💼 Business</option>
+                            <option value="honeymoon">💑 Honeymoon</option>
+                            <option value="family">👨‍👩‍👧 Family</option>
+                            <option value="pilgrimage">🙏 Pilgrimage</option>
+                            <option value="backpacking">🎒 Budget Backpacking</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="form-error" class="inline-msg error" style="display:none;"></div>
+                <button id="generateBtn" class="btn-generate" onclick="generateTrip()">✨ Generate My Trip Plan</button>
+            </div>
+
+            <div class="quick-destinations">
+                <h3>Trending Destinations</h3>
+                <div class="dest-chips">
+                    <span onclick="fillDest('Goa')">🏖 Goa</span>
+                    <span onclick="fillDest('Manali')">🏔 Manali</span>
+                    <span onclick="fillDest('Jaipur')">🏰 Jaipur</span>
+                    <span onclick="fillDest('Kerala')">🌴 Kerala</span>
+                    <span onclick="fillDest('Dubai')">🌆 Dubai</span>
+                    <span onclick="fillDest('Bangkok')">🛕 Bangkok</span>
+                    <span onclick="fillDest('Bali')">🌺 Bali</span>
+                    <span onclick="fillDest('Singapore')">🦁 Singapore</span>
+                    <span onclick="fillDest('Paris')">🗼 Paris</span>
+                    <span onclick="fillDest('Tokyo')">🎌 Tokyo</span>
+                </div>
+            </div>
+        </main>
+
+        <aside class="right-panel">
+            <div class="stat-mini">
+                <div class="stat-num">AI</div>
+                <div class="stat-lbl">Powered Itineraries</div>
+            </div>
+            <div class="stat-mini">
+                <div class="stat-num">3+</div>
+                <div class="stat-lbl">Hotel Options</div>
+            </div>
+            <div class="stat-mini">
+                <div class="stat-num">₹</div>
+                <div class="stat-lbl">Real INR Prices</div>
+            </div>
+            <div class="quick-links">
+                <button onclick="go('trips.html')">🧳 My Trips</button>
+                <button onclick="go('explore.html')">🌍 Explore All</button>
+            </div>
+        </aside>
     </div>
-
-    <!-- ✅ Main Content -->
-    <div class="main">
-
-        <h1>Plan Your Trip 🌍</h1>
-
-        <!-- Form -->
-        <div class="card">
-            <input id="destination" type="text" placeholder="🌍 Destination">
-            <input id="budget" type="number" placeholder="💰 Budget">
-            <input id="days" type="number" placeholder="📅 Days">
-
-            <button onclick="generateTrip()">Generate Trip</button>
-        </div>
-
-        <!-- Result -->
-        <div id="result" class="result-box">
-            <p>✨ Your trip details will appear here</p>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="card">
-            <button onclick="go('saved.html')">💾 Save Trip</button>
-            <button onclick="go('trips.html')">🧳 View Trips</button>
-        </div>
-
-    </div>
-
-    <!-- ✅ Right Panel -->
-    <div class="right-panel">
-
-        <div class="stat-card">
-            <h2>24</h2>
-            <p>Trips</p>
-        </div>
-
-        <div class="stat-card">
-            <h2>37</h2>
-            <p>Countries</p>
-        </div>
-
-        <div class="map">
-            🌍 Map coming soon
-        </div>
-
-        <!-- Countries -->
-        <div class="countries">
-            <div>🇮🇳 India</div>
-            <div>🇫🇷 France</div>
-            <div>🇺🇸 USA</div>
-            <div>🇮🇹 Italy</div>
-        </div>
-
-    </div>
-
-</div>
-
-<script src="script.js"></script>
-
+    <script src="script.js"></script>
+    <script>
+        if (!localStorage.getItem("token")) { window.location.href = "login.html"; }
+    </script>
+    <script src="chatwidget.js"></script>
 </body>
+
 </html>

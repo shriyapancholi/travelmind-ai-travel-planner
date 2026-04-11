@@ -1,77 +1,89 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Explore</title>
+    <meta charset="UTF-8">
+    <script>if (!localStorage.getItem("token")) { window.location.replace("login.html"); }</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore — TravelMind</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 </head>
 
 <body>
+    <div class="app-layout">
+        <aside class="sidebar">
+            <div class="sidebar-logo"><span>✈</span> TravelMind</div>
+            <nav class="sidebar-nav">
+                <a class="nav-item" onclick="go('index.html')">🏠 <span>Dashboard</span></a>
+                <a class="nav-item" onclick="go('trips.html')">🧳 <span>My Trips</span></a>
+                <a class="nav-item active">🌍 <span>Explore</span></a>
+                <a class="nav-item" id="nav-login">🔐 <span>Login</span></a>
+            </nav>
+            <div class="sidebar-badge">🇮🇳 Made for India</div>
+        </aside>
+        <main class="main-content">
+            <div class="page-header">
+                <h1>Explore Destinations 🌍</h1>
+                <p>Tap any destination to auto-fill your trip planner</p>
+            </div>
 
-<div class="dashboard">
+            <div
+                style="margin-bottom:6px; font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted, rgba(255,255,255,.5));">
+                Within India</div>
+            <div class="explore-grid" id="india-grid"></div>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <h2>✈️ TravelMind</h2>
-        <ul>
-            <li onclick="go('index.html')">🏠 Dashboard</li>
-            <li onclick="go('trips.html')">🧳 My Trips</li>
-            <li onclick="go('saved.html')">💾 Saved</li>
-            <li class="active">🌍 Explore</li>
-        </ul>
+            <div
+                style="margin:26px 0 6px; font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted, rgba(255,255,255,.5));">
+                International</div>
+            <div class="explore-grid" id="intl-grid"></div>
+        </main>
     </div>
+    <script src="script.js"></script>
+    <script>
+        const INDIA = [
+            { name: "Goa", seed: "goa-beach", tag: "🏖 Beach & Party" },
+            { name: "Manali", seed: "manali-snow", tag: "🏔 Snow & Adventure" },
+            { name: "Jaipur", seed: "jaipur-palace", tag: "🏰 Heritage & Culture" },
+            { name: "Kerala", seed: "kerala-backwaters", tag: "🌴 Backwaters & Nature" },
+            { name: "Varanasi", seed: "varanasi-temple", tag: "🙏 Spiritual Journey" },
+            { name: "Andaman", seed: "andaman-beach", tag: "🐠 Islands & Diving" },
+            { name: "Rishikesh", seed: "rishikesh-river", tag: "🧘 Yoga & Rafting" },
+            { name: "Ladakh", seed: "ladakh-mountains", tag: "🏔 High Altitude" },
+        ];
+        const INTL = [
+            { name: "Dubai", seed: "dubai-skyline", tag: "🌆 Luxury & Shopping" },
+            { name: "Bangkok", seed: "bangkok-temple", tag: "🛕 Culture & Food" },
+            { name: "Bali", seed: "bali-rice-fields", tag: "🌺 Nature & Spirituality" },
+            { name: "Singapore", seed: "singapore-marina-bay", tag: "🦁 City & Theme Parks" },
+            { name: "Paris", seed: "paris-eiffel-tower", tag: "🗼 Romance & Art" },
+            { name: "Tokyo", seed: "tokyo-city", tag: "🎌 Tech & Tradition" },
+            { name: "Maldives", seed: "maldives-lagoon", tag: "🏝 Overwater Villas" },
+            { name: "London", seed: "london-tower-bridge", tag: "🎡 History & Culture" },
+            { name: "Switzerland", seed: "switzerland-alps", tag: "🏔 Alps & Chocolate" },
+            { name: "New York", seed: "new-york-skyline", tag: "🗽 City That Never Sleeps" },
+            { name: "Rome", seed: "rome-colosseum", tag: "🏛 History & Cuisine" },
+            { name: "Amsterdam", seed: "amsterdam-canal", tag: "🚲 Canals & Tulips" },
+        ];
 
-    <!-- Main -->
-    <div class="main">
-        <h1>Trending Destinations 🌍</h1>
-
-        <div class="explore-grid">
-
-            <div class="dest-card">
-                <img src="https://source.unsplash.com/400x300/?bali">
-                <h3>Bali</h3>
+        function renderGrid(items, id) {
+            document.getElementById(id).innerHTML = items.map(d => `
+        <div class="dest-card" onclick="selectDestination('${d.name}')">
+            <div class="dest-img-wrap">
+                <img src="https://picsum.photos/seed/${d.seed}/400/280" alt="${d.name}" loading="lazy"
+                     onerror="this.src='https://picsum.photos/seed/${d.name.toLowerCase()}/400/280'">
+                <div class="dest-overlay"></div>
+                <div class="dest-tag">${d.tag}</div>
             </div>
-
-            <div class="dest-card">
-                <img src="https://source.unsplash.com/400x300/?dubai">
-                <h3>Dubai</h3>
-            </div>
-
-            <div class="dest-card">
-                <img src="https://source.unsplash.com/400x300/?paris">
-                <h3>Paris</h3>
-            </div>
-
-            <div class="dest-card">
-                <img src="https://source.unsplash.com/400x300/?maldives">
-                <h3>Maldives</h3>
-            </div>
-
-            <div class="dest-card">
-                <img src="https://source.unsplash.com/400x300/?switzerland">
-                <h3>Switzerland</h3>
-            </div>
-
-            <div class="dest-card">
-                <img src="https://source.unsplash.com/400x300/?newyork">
-                <h3>New York</h3>
-            </div>
-
-            <div class="dest-card">
-                <img src="https://source.unsplash.com/400x300/?tokyo">
-                <h3>Tokyo</h3>
-            </div>
-
-            <div class="dest-card">
-                <img src="https://source.unsplash.com/400x300/?goa">
-                <h3>Goa</h3>
-            </div>
-
-        </div>
-    </div>
-
-</div>
-
-<script src="script.js"></script>
-
+            <div class="dest-name">${d.name}</div>
+        </div>`).join("");
+        }
+        renderGrid(INDIA, "india-grid");
+        renderGrid(INTL, "intl-grid");
+        if (!localStorage.getItem("token")) { window.location.href = "login.html"; }
+    </script>
+    <script src="chatwidget.js"></script>
 </body>
+
 </html>

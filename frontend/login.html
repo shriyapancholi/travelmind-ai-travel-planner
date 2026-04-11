@@ -1,21 +1,67 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — TravelMind</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 </head>
-<body>
 
-<div class="auth-container">
-    <h1>Login 🔐</h1>
+<body class="auth-page">
+    <div class="auth-wrapper">
+        <div class="auth-left">
+            <div class="auth-brand">✈ TravelMind</div>
+            <h2>Plan smarter.<br>Travel better.</h2>
+            <p>India's AI-powered travel planner. Get complete trip packages with real hotels, real flights, and real
+                INR pricing — in seconds.</p>
+            <div class="auth-features">
+                <div>✅ AI-generated day-by-day itineraries</div>
+                <div>✅ 3 flight options per route</div>
+                <div>✅ Budget, mid-range & luxury hotels</div>
+                <div>✅ Full budget breakdown with tips</div>
+                <div>✅ Emergency contacts & weather info</div>
+            </div>
+        </div>
+        <div class="auth-right">
+            <div class="auth-box">
+                <h1 id="auth-title" data-mode="login">Welcome back 👋</h1>
+                <p class="auth-sub" id="auth-sub">Sign in to your TravelMind account</p>
 
-    <input type="text" placeholder="Email">
-    <input type="password" placeholder="Password">
+                <div id="name-row" style="display:none;">
+                    <div class="field-group">
+                        <label>Full Name</label>
+                        <input id="name" type="text" placeholder="Your full name">
+                    </div>
+                </div>
+                <div class="field-group">
+                    <label>Email Address</label>
+                    <input id="email" type="email" placeholder="you@example.com">
+                </div>
+                <div class="field-group">
+                    <label>Password</label>
+                    <input id="password" type="password" placeholder="Min 6 characters">
+                </div>
 
-    <button>Login</button>
+                <div id="auth-error" class="inline-msg error" style="display:none;"></div>
 
-    <p>Don't have an account? Register</p>
-</div>
+                <button id="auth-submit" class="btn-generate" onclick="loginUser()">Sign In</button>
 
+                <div class="auth-switch">
+                    <span id="auth-toggle-btn">
+                        Don't have an account? <a onclick="toggleAuthMode()">Register free</a>
+                    </span>
+                </div>
+                <div class="auth-back" onclick="go('index.html')">← Back to Dashboard</div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        if (localStorage.getItem("token")) window.location.href = "index.html";
+    </script>
 </body>
+
 </html>

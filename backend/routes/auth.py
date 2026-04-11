@@ -4,60 +4,107 @@ from models.user import user_schema
 import bcrypt
 import jwt
 import os
+import re
 from datetime import datetime, timedelta, timezone
+from functools import wraps
 
-auth_bp = Blueprint("auth", __name__)
+auth_bp    = Blueprint("auth", __name__)
+JWT_SECRET = os.getenv("JWT_SECRET")
 
-JWT_SECRET = os.getenv("JWT_SECRET", "travelmindsecret")
+if not JWT_SECRET:
+    raise RuntimeError("JWT_SECRET is not set in .env. Refusing to start.")
+
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth  = request.headers.get("Authorization", "")
+        token = auth.split(" ")[1] if auth.startswith("Bearer ") else None
+        if not token:
+            return jsonify({"error": "Token is missing"}), 401
+        try:
+            payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+            request.user_id    = payload.get("user_id")
+            request.user_email = payload.get("email")
+        except jwt.ExpiredSignatureError:
+            return jsonify({"error": "Token has expired"}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({"error": "Invalid token"}), 401
+        return f(*args, **kwargs)
+    return decorated
+
+
+def _valid_email(email):
+    return re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email) is not None
 
 
 @auth_bp.route("/register", methods=["POST"])
 def register():
-    data = request.json
+    data = request.json or {}
 
-    if not data.get("email") or not data.get("password"):
-        return jsonify({"error": "Email and password required"}), 400
+    name     = (data.get("name") or "").strip()
+    email    = (data.get("email") or "").strip().lower()
+    password = data.get("password") or ""
 
-    # Check for existing user
-    if db.users.find_one({"email": data["email"]}):
-        return jsonify({"error": "Email already registered"}), 409
+    if not email or not password:
+        return jsonify({"error": "Email and password are required"}), 400
+    if not _valid_email(email):
+        return jsonify({"error": "Invalid email address"}), 400
+    if len(password) < 6:
+        return jsonify({"error": "Password must be at least 6 characters"}), 400
 
-    # Hash password
-    hashed = bcrypt.hashpw(data["password"].encode("utf-8"), bcrypt.gensalt())
+    if db.users.find_one({"email": email}):
+        return jsonify({"error": "An account with this email already exists"}), 409
 
-    user = user_schema(
-        name=data.get("name", ""),
-        email=data["email"],
-        password=hashed.decode("utf-8"),
-    )
-
+    hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+    user   = user_schema(name=name, email=email, password=hashed.decode("utf-8"))
     db.users.insert_one(user)
 
-    return jsonify({"message": "User registered successfully"}), 201
+    return jsonify({"message": "Account created successfully"}), 201
 
 
 @auth_bp.route("/login", methods=["POST"])
 def login():
-    data = request.json
+    data = request.json or {}
 
-    if not data.get("email") or not data.get("password"):
-        return jsonify({"error": "Email and password required"}), 400
+    email    = (data.get("email") or "").strip().lower()
+    password = data.get("password") or ""
 
-    user = db.users.find_one({"email": data["email"]})
+    if not email or not password:
+        return jsonify({"error": "Email and password are required"}), 400
 
+    user = db.users.find_one({"email": email})
     if not user:
-        return jsonify({"error": "Invalid credentials"}), 401
+        return jsonify({"error": "Invalid email or password"}), 401
 
-    # Verify password
-    if not bcrypt.checkpw(data["password"].encode("utf-8"), user["password"].encode("utf-8")):
-        return jsonify({"error": "Invalid credentials"}), 401
+    if not bcrypt.checkpw(password.encode("utf-8"), user["password"].encode("utf-8")):
+        return jsonify({"error": "Invalid email or password"}), 401
 
-    # Generate JWT token
     payload = {
         "user_id": str(user["_id"]),
-        "email": user["email"],
-        "exp": datetime.now(timezone.utc) + timedelta(hours=24),
+        "email":   user["email"],
+        "name":    user.get("name", ""),
+        "exp":     datetime.now(timezone.utc) + timedelta(hours=24),
     }
     token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
 
-    return jsonify({"message": "Login successful", "token": token}), 200
+    return jsonify({
+        "message": "Login successful",
+        "token":   token,
+        "name":    user.get("name", ""),
+        "email":   user["email"],
+    }), 200
+
+
+@auth_bp.route("/me", methods=["GET"])
+@token_required
+def me():
+    """Return current user info — used by frontend to show username."""
+    user = db.users.find_one({"_id": __import__("bson").ObjectId(request.user_id)})
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    return jsonify({
+        "name":       user.get("name", ""),
+        "email":      user["email"],
+        "created_at": str(user.get("created_at", "")),
+    }), 200

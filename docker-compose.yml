@@ -1,28 +1,34 @@
-version: "3.8"
-
 services:
-  mongo:
-    image: mongo:7.0
-    container_name: travelmind-mongo
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
-    restart: unless-stopped
 
-  flask:
+  backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: travelmind-flask
+    container_name: travelmind-backend
+    restart: always
     ports:
       - "5001:5001"
     environment:
-      - MONGO_URI=mongodb://mongo:27017/travelmind
-      - JWT_SECRET=travelmindsecret
-    depends_on:
-      - mongo
-    restart: unless-stopped
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - MONGO_URI=${MONGO_URI}
+      - ALLOWED_ORIGINS=http://localhost,http://127.0.0.1
+    networks:
+      - travelmind-network
 
-volumes:
-  mongo_data:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: travelmind-frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - travelmind-network
+
+networks:
+  travelmind-network:
+    driver: bridge

@@ -8,11 +8,8 @@ services:
     restart: always
     ports:
       - "5001:5001"
-    environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - JWT_SECRET=${JWT_SECRET}
-      - MONGO_URI=${MONGO_URI}
-      - ALLOWED_ORIGINS=http://localhost,http://127.0.0.1
+    env_file:
+      - ./backend/.env
     networks:
       - travelmind-network
 
